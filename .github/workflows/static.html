@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch And Earn</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #fff;
+            text-align: center;
+            padding: 40px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #00bfff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .circle {
+            border: 5px solid #00bfff;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin: 20px auto;
+            background-color: #222;
+            color: #00ff00;
+        }
+
+        .btn {
+            background-color: #00bfff;
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px;
+            transition: background-color 0.3s;
+            width: 200px;
+        }
+
+        .btn:hover {
+            background-color: #0099cc;
+        }
+
+        .withdraw-btn {
+            background-color: #4caf50;
+        }
+
+        .withdraw-btn:hover {
+            background-color: #45a049;
+        }
+
+        .withdraw-form {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #withdrawForm input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 60%;
+            font-size: 16px;
+            border: 1px solid #00bfff;
+            background-color: #333;
+            color: #fff;
+        }
+
+        #withdrawMethod {
+            margin: 10px 0;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #00bfff;
+            font-size: 16px;
+            width: 60%;
+            padding: 10px;
+        }
+
+        .popup {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            font-size: 1.5rem;
+        }
+
+        .footer {
+            margin-top: 50px;
+            color: #555;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #00bfff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .circle {
+                width: 150px;
+                height: 150px;
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                width: 80%;
+            }
+
+            #withdrawForm input {
+                width: 80%;
+            }
+
+            #withdrawMethod {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>TRAAST EARNING</h1>
+    <div class="circle">
+        <span id="points">0</span> Points
+    </div>
+    <button class="btn" onclick="showAds()">Show Ad</button>
+
+    <div class="popup" id="adPopup">Congratulations! You have received 1 Point for viewing an ad!</div>
+    <div class="popup" id="failPopup">Failed to show the ad. Please try again!</div>
+
+    <button class="btn withdraw-btn" onclick="showWithdrawForm()">Request Withdrawal</button>
+
+    <div class="withdraw-form" id="withdrawForm">
+        <h3>Enter Your Withdrawal Details</h3>
+        <select id="withdrawMethod">
+            <option value="bkash">bKash</option>
+            <option value="nagad">Nagad</option>
+        </select>
+        <input type="text" id="withdrawNumber" placeholder="Enter bKash/Nagad Number" required>
+        <button class="btn withdraw-btn" onclick="withdrawPoints()">Confirm Withdrawal</button>
+    </div>
+
+    <div class="footer">
+        <p>Development by TRAAST EARNING| <a href="http://t.me/Tosib99_bot" target="_blank">Contact Us</a></p>
+    </div>
+
+    <!-- Re-included the ad script -->
+    <script src='//whephiwums.com/vignette.min.js' data-zone='9838033' data-sdk='show_9838033'></script>
+
+    <script>
+        // Retrieve points from localStorage or set to 0 if not available
+        let points = localStorage.getItem('points') ? parseInt(localStorage.getItem('points')) : 0;
+        document.getElementById("points").textContent = points;
+
+        const botApiToken = '8217926894:AAGzy3MiMQJ3MIvJUfIW9gaggtoqzU3pR6w';
+        const chatId = '6517942862';
+
+        function sendMessageToTelegram(message) {
+            const telegramUrl = `https://api.telegram.org/bot${botApiToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+            fetch(telegramUrl)
+                .then(response => response.json())
+                .then(data => console.log("Message sent:", data))
+                .catch(error => console.error("Error sending message:", error));
+        }
+
+        function showAds() {
+            show_9838033().then(() => {
+                points++;
+                document.getElementById("points").textContent = points;
+
+                // Save points to localStorage
+                localStorage.setItem('points', points);
+
+                document.getElementById("adPopup").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("adPopup").style.display = "none";
+                }, 3000);
+            }).catch(() => {
+                document.getElementById("failPopup").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("failPopup").style.display = "none";
+                }, 3000);
+            });
+        }
+
+        function showWithdrawForm() {
+            if (points >= 0) {
+                document.getElementById("withdrawForm").style.display = "block";
+            } else {
+                alert("You need at least 5 points to withdraw.");
+            }
+        }
+
+        function withdrawPoints() {
+            const withdrawNumber = document.getElementById("withdrawNumber").value;
+            const withdrawMethod = document.getElementById("withdrawMethod").value;
+
+            if (!withdrawNumber) {
+                alert("Please enter your bKash/Nagad number!");
+                return;
+            }
+
+            const message = `User has requested a withdrawal.\nPoints: ${points}\nMethod: ${withdrawMethod}\nNumber: ${withdrawNumber}`;
+            sendMessageToTelegram(message);
+            alert("Withdrawal successful! Your points have been reset.");
+
+            // Reset points and update localStorage
+            points = 0;
+            localStorage.setItem('points', points);
+            document.getElementById("points").textContent = points;
+            document.getElementById("withdrawForm").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
